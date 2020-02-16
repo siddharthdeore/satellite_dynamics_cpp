@@ -159,6 +159,12 @@
     <ClInclude Include="ode_wrapper.h" />
     <ClInclude Include="Satellite.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="conf.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="results.csv" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

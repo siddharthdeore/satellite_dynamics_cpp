@@ -11,6 +11,7 @@
 #include <boost/numeric/odeint.hpp>
 #include "ode_wrapper.h"
 
+#include <fstream>
 #include <windows.h>
 HANDLE hOut= GetStdHandle(STD_OUTPUT_HANDLE);;
 void clearScreen()
@@ -93,9 +94,9 @@ void Satellite::dynamics(const state_type& x, state_type& dxdt, const double t) 
 	// TODO: introduce quaternion error,
 	// TODO: inroduce external inpu torque
 	double PD[3] = {
-					1.0 * 0 + 0 * 0.50 * x[4],
-					1.0 * 0 + 0 * 0.50 * x[5],
-					1.0 * 0 + 0 * 0.50 * x[6]
+					1.0 * 0 + 1 * 0.50 * x[4],
+					1.0 * 0 + 1 * 0.50 * x[5],
+					1.0 * 0 + 1 * 0.50 * x[6]
 				};
 
 	dxdt[4] = ((this->Iyy - this->Izz) * x[5] * x[6] - PD[0]) / this->Ixx;
@@ -131,8 +132,10 @@ int Satellite::step(double final_time, double dt, state_type& new_state)
 }
 
 void Satellite::write_state(const state_type& state, const double t) {
-	clearScreen();
+	
+	clearScreen(); // clear screen 
 	setcursor(0, 1); // Hide cursor
+
 	std::cout << char(218) << std::string(83, char(196))<< char(191) << std::endl;
 	std::cout<<"|     time    |    q0   |    q1   |    q2   |    q3   |    wx   |    wy   |    wz   |" << std::endl;
 	std::cout << char(195) << std::string(83, char(196)) << char(180) << std::endl;
@@ -145,8 +148,27 @@ void Satellite::write_state(const state_type& state, const double t) {
 	std::cout << std::setw(8) << state[5] << " |";
 	std::cout << std::setw(8) << state[6] << " |" << std::endl;
 	std::cout << char(192) << std::string(83, char(196)) << char(217) << std::endl;
+	
 	//Progress bar
 	std::cout << std::string(int(t / 10000 * 85), char(178)) << std::string(int(85 - t / 10000 * 85), char(176)) << std::endl;
+	
+	// write to file
+	std::string s =
+		std::to_string(t) +		   ", " +
+		std::to_string(state[0]) + ", " +
+		std::to_string(state[1]) + ", " +
+		std::to_string(state[2]) + ", " +
+		std::to_string(state[3]) + ", " +
+		std::to_string(state[4]) + ", " +
+		std::to_string(state[5]) + ", " +
+		std::to_string(state[6]) + "\n";
+	std::ofstream outfile;
+
+	outfile.open("results.csv", std::ios_base::app); // append instead of overwrite
+	outfile << s;
+	outfile.close();
+	//
+
 }
 
 void Satellite::setInnertia(double Ix, double Iy, double Iz) {
