@@ -3,8 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-results.csv
-conf.txt
+#results.csv
+#conf.txt
 
 # User-specific files
 *.rsuser
