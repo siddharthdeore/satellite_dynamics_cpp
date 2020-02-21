@@ -53,6 +53,8 @@ int main(int argc, char** argv)
 	time_t t1, t2;
 	//double q0, q1, q2, q3, w0, w1, w2, w3;
 	sat.setInnertia(1.0, 2.0, 3.0);
+	sat.setControllerGains(0.005, 0.01); // (Kp,Kd)
+	sat.setTargetQuaternion(0.0, 1.0, 0.0, 0.0); //(q0,q1,q2,q3)
 	sat.setState(IC[0], IC[1], IC[2], IC[3], IC[4], IC[5], IC[6]);
 	time(&t1);
 	sat.step(10000.0, 0.01, x);

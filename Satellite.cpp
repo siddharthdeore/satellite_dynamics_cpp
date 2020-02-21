@@ -43,6 +43,12 @@ double Satellite::Ixx = 1.0;
 double Satellite::Iyy = 1.0;
 double Satellite::Izz = 1.0;
 
+double Satellite::Kp = 0.0;
+double Satellite::Kd = 1.0;
+
+double Satellite::qd[4] = { 1.0,0.0,0.0,0.0 };
+
+
 void Satellite::Satelliite() {
 	state_type X = { { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  } }; // initial conditions
 }
@@ -90,13 +96,14 @@ void Satellite::dynamics(const state_type& x, state_type& dxdt, const double t) 
 	dxdt[2] = 0.5 * (q0 * x[5] - q1 * x[4] + q3 * x[6]);
 	dxdt[3] = 0.5 * (-q0 * x[4] - q1 * x[5] - q2 * x[6]);
 	
-	// Derivative Controller
-	// TODO: introduce quaternion error,
-	// TODO: inroduce external inpu torque
+	qe[0] = q0 * this->qd[3] + q1 * this->qd[2] - q2 * this->qd[1] - q3 * this->qd[0];
+	qe[1] = q2 * this->qd[0] - q0 * this->qd[2] + q1 * this->qd[3] - q3 * this->qd[1];
+	qe[2] = q0 * this->qd[1] - q1 * this->qd[0] + q2 * this->qd[3] - q3 * this->qd[2];
+	qe[3] = q0 * this->qd[0] + q1 * this->qd[1] + q2 * this->qd[2] + q3 * this->qd[3];
 	double PD[3] = {
-					1.0 * 0 + 1 * 0.50 * x[4],
-					1.0 * 0 + 1 * 0.50 * x[5],
-					1.0 * 0 + 1 * 0.50 * x[6]
+					this.Kp * qe[0] * qe[3] + this.Kd * x[4],
+					this.Kp * qe[1] * qe[3] + this.Kd * x[5],
+					this.Kp * qe[2] * qe[3] + this.Kd * x[6]
 				};
 
 	dxdt[4] = ((this->Iyy - this->Izz) * x[5] * x[6] - PD[0]) / this->Ixx;
@@ -129,6 +136,14 @@ int Satellite::step(double final_time, double dt, state_type& new_state)
 	// return value to caller
 	new_state = X;
 	return 0;
+}
+
+void Satellite::setTargetQuaternion(double q0, double q1, double q2, double q3)
+{
+	this->qd[0] = q0;
+	this->qd[1] = q1;
+	this->qd[2] = q2;
+	this->qd[3] = q3;
 }
 
 void Satellite::write_state(const state_type& state, const double t) {
@@ -175,4 +190,10 @@ void Satellite::setInnertia(double Ix, double Iy, double Iz) {
 	this->Ixx = Ix;
 	this->Iyy = Iy;
 	this->Izz = Iz;
+}
+
+void Satellite::setControllerGains(double Kp, double Kd)
+{
+	this->Kp = Kp;
+	this->Kd = Kd;
 }

@@ -20,7 +20,7 @@ private:
 	state_type X;
 
 public:
-	static double Ixx, Iyy, Izz;
+	static double Ixx, Iyy, Izz, Kp, Kd, qd[4];
 	void Satelliite();
 
 	int setQuaternion(double q0, double q1, double q2, double q3);
@@ -33,6 +33,8 @@ public:
 	double normalizeQuaternions(double& _q0, double& _q1, double& _q2, double& _q3);
 	int step(double t, double dt, state_type& new_state);
 	void setInnertia(double Ix, double Iy, double Iz);
+	void setControllerGains(double Kp, double Kd);
+	void setTargetQuaternion(double q0, double q1, double q2, double q3);
 	void write_state(const state_type& state, const double t);
 
 };
