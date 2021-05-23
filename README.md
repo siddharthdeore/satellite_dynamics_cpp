@@ -1,4 +1,4 @@
-# satellite_dynamics_cpp
+# satellite attitude dynamics and control
 
 Spacecraft attitude dynamics!
 
